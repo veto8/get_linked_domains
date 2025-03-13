@@ -19,6 +19,9 @@ class GetDomains:
         while len(self.o):
             time.sleep(0.5)
             self.browse_page(self.o[0])
+            list(set(self.o))
+            list(set(self.c))
+            list(set(self.e))
             print("open: {}".format(len(self.o)))
             print("closed: {}".format(len(self.c)))
             print("ext: {}".format(len(self.e)))
@@ -73,12 +76,14 @@ class GetDomains:
 
             # if the url is for external, then save it to the external list
             if url.startswith("https://" + self.domain) == False:
-                self.e.append(url)
+                if url not in self.e:
+                    self.e.append(url)
                 continue
 
             if url not in self.o and url not in self.c:
                 print("...add:\t{}".format(url))
-                self.o.append(url)
+                if url not in self.o:
+                    self.o.append(url)
 
         if req_url in self.o:
             print("...rm:\t{}".format(req_url))
