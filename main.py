@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import validators
+import multiprocessing as mp
 
 
 class GetDomains:
@@ -12,13 +13,51 @@ class GetDomains:
         self.domain = domain
         self.o = []
         self.o.append("https://" + domain)
+        self.o.append("https://" + domain + "/dev_posts/view/4136")
         self.c = []
         self.e = []
 
     def start(self):
         while len(self.o):
             time.sleep(0.5)
-            self.browse_page(self.o[0])
+
+            # items = self.get_page_items(req_url)
+            mp.set_start_method("spawn")
+            q = mp.Queue()
+            q2 = mp.Queue()
+            jobs = []
+
+            req_url = self.o[0]
+            p = mp.Process(
+                target=self.get_page_items,
+                args=(
+                    q,
+                    req_url,
+                ),
+            )
+            jobs.append(p)
+
+            req_url2 = self.o[1]
+            p2 = mp.Process(
+                target=self.get_page_items,
+                args=(
+                    q2,
+                    req_url2,
+                ),
+            )
+            jobs.append(p2)
+
+            time.sleep(1)
+            p.start()
+            p2.start()
+            print(q.get())
+            print(q2.get())
+            for i in jobs:
+                i.join()
+            # p.join()
+            break
+            # self.process_items(items, req_url)
+            """
             list(set(self.o))
             list(set(self.c))
             list(set(self.e))
@@ -26,11 +65,11 @@ class GetDomains:
             print("closed: {}".format(len(self.c)))
             print("ext: {}".format(len(self.e)))
             print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-
+            """
         else:
             print("...stop")
 
-    def browse_page(self, req_url):
+    def get_page_items(self, q, req_url):
         print("...req:\t{}".format(self.o[0]))
 
         if req_url in self.c:
@@ -50,7 +89,10 @@ class GetDomains:
         browser.get(req_url)
         soup = BeautifulSoup(browser.page_source, "html.parser")
         items = soup.find_all("a")
+        q.put(items)
+        return items
 
+    def process_items(self, items, req_url):
         for i in items:
             # extract the url of the page
             url = i.get("href")
