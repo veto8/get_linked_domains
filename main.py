@@ -8,13 +8,13 @@ import validators
 import multiprocessing as mp
 
 class GetDomains:
-    def __init__(self, domain="myridia.com"):
+    def __init__(self, domain="127.0.0.1"):
         self.domain = domain
-        self.t = 3 
+        self.t = 100 
         self.o = []
-        self.o.append("https://" + domain)
-        for i in range(200,210):
-          self.o.append("https://{0}/dev_posts/view/{1}".format(domain,i))
+        self.o.append("http://" + domain)
+        #for i in range(1,100):
+        #  self.o.append("http://{0}/sku/{1}.html".format(domain,i))
         self.c = []
         self.e = []
 
@@ -44,42 +44,54 @@ class GetDomains:
                  )
                 jobs.append(p)
                 p.start()                
-              #print("...tread.................")
+              print("...tread.................")
               for proc in jobs:
                 proc.join()
                 
               for k,v in enumerate(return_dict.values()):
-                 print(k)
-                 #self.process_items(v)                  
+                 #print(k)
+                 self.process_items(v)                  
                  print("open: {0} \t closed: {1} \t ext: {2}".format(len(self.o),len(self.c),len(self.e)))            
 
 
 
     def get_page_items(self,req_url, id, return_dict ):
-        print("...req:\t{}".format(req_url))
-        """
-        if validators.url(req_url):        
+        if validators.url(req_url):
+          print("...req:\t{}".format(req_url))
           chrome_options = Options()
           chrome_options.add_argument("--headless=new")  # for Chrome >= 109
 
           browser = webdriver.Chrome(options=chrome_options)
           browser.get(req_url)
           soup = BeautifulSoup(browser.page_source, "html.parser")
-          items = soup.find_all("a")
+          _items = soup.find_all("a")
+          items = []
+          for i in _items:
+            items.append(i.get("href"))          
           #print(items)          
           return_dict[id] = items
-        """
 
-     
+    def request_page(self,req_url ):
+        if validators.url(req_url):
+          print("...req:\t{}".format(req_url))
+          chrome_options = Options()
+          chrome_options.add_argument("--headless=new")  # for Chrome >= 109
+          browser = webdriver.Chrome(options=chrome_options)
+          browser.get(req_url)
+          soup = BeautifulSoup(browser.page_source, "html.parser")
+          _items = soup.find_all("a")
+          items = []
+          for i in _items:
+            items.append(i.get("href"))
+          print(items)
 
     def process_items(self, items):
-        for i in items:
+        for url in items:
             # extract the url of the page
-            url = i.get("href")
 
             # if the url has not starting protocol and domain, then  adding it
-            if not url.startswith("https://"):
-                url = "https://" + self.domain + url
+            if not url.startswith("http://"):
+                url = "http://" + self.domain + url
 
             # remove ending forwardslash
             if url[-1] == "/":
@@ -91,20 +103,21 @@ class GetDomains:
                 continue
 
             # if the url is for external, then save it to the external list
-            if url.startswith("https://" + self.domain) == False:
+            if url.startswith("http://" + self.domain) == False:
                 if url not in self.e:
                     self.e.append(url)
                 continue
 
             if url not in self.o and url not in self.c:
-                #print("...add:\t{}".format(url))
+                print("...add:\t{}".format(url))
                 if url not in self.o:
                     self.o.append(url)
 
 
 
 if __name__ == "__main__":
-    d = GetDomains("myridia.com")
+    d = GetDomains("127.0.0.1")
     d.start()
+    #d.request_page("http://127.0.0.1")
 
 
