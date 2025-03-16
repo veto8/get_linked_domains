@@ -48,7 +48,9 @@ class GetDomains:
                 jobs.append(p)
                 p.start()                
               #print("...tread.................")
-              print("proc: {0}\t open:{1}\t closed:{2}\t ext:{3}\t time passed: {4}".format(self.p,len(self.o),len(self.c),len(self.e),datetime.timedelta(seconds=round(time.time()) - self.init_time)))    
+              msg = """ proc: {0} \t open:{1} \t closed:{2} \t ext:{3} \t time passed: {4}""".format(self.p ,len(self.o),len(self.c),len(self.e),datetime.timedelta(seconds=round(time.time()) - self.init_time))
+              
+              print(msg)    
               
               for proc in jobs:
                 proc.join()
