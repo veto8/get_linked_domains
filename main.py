@@ -8,9 +8,9 @@ import validators
 import multiprocessing as mp
 
 class GetDomains:
-    def __init__(self, domain="127.0.0.1"):
+    def __init__(self, domain="127.0.0.1", proc=3):
         self.domain = domain
-        self.t = 100 
+        self.p = proc
         self.o = []
         self.o.append("http://" + domain)
         #for i in range(1,100):
@@ -24,8 +24,8 @@ class GetDomains:
         while len(self.o):
             time.sleep(0.5)
             chunks = []
-            for i in range(0, len(self.o), self.t):
-              chunks.append(self.o[i:i + self.t])
+            for i in range(0, len(self.o), self.p):
+              chunks.append(self.o[i:i + self.p])
             for i in chunks:
               jobs = []
               manager = mp.Manager()
@@ -44,20 +44,22 @@ class GetDomains:
                  )
                 jobs.append(p)
                 p.start()                
-              print("...tread.................")
+              #print("...tread.................")
+              print("proc: {0} \t open: {1} \t closed: {2} \t ext: {3}".format(self.p,len(self.o),len(self.c),len(self.e)))                        
+              
               for proc in jobs:
                 proc.join()
                 
               for k,v in enumerate(return_dict.values()):
                  #print(k)
                  self.process_items(v)                  
-                 print("open: {0} \t closed: {1} \t ext: {2}".format(len(self.o),len(self.c),len(self.e)))            
+
 
 
 
     def get_page_items(self,req_url, id, return_dict ):
         if validators.url(req_url):
-          print("...req:\t{}".format(req_url))
+          #print("...req:\t{}".format(req_url))
           chrome_options = Options()
           chrome_options.add_argument("--headless=new")  # for Chrome >= 109
 
@@ -73,7 +75,7 @@ class GetDomains:
 
     def request_page(self,req_url ):
         if validators.url(req_url):
-          print("...req:\t{}".format(req_url))
+          #print("...req:\t{}".format(req_url))
           chrome_options = Options()
           chrome_options.add_argument("--headless=new")  # for Chrome >= 109
           browser = webdriver.Chrome(options=chrome_options)
@@ -109,15 +111,18 @@ class GetDomains:
                 continue
 
             if url not in self.o and url not in self.c:
-                print("...add:\t{}".format(url))
+                #print("...add:\t{}".format(url))
                 if url not in self.o:
                     self.o.append(url)
 
-
+    def complete(self):
+        print("...completed!");
+        print(self.c);        
 
 if __name__ == "__main__":
-    d = GetDomains("127.0.0.1")
+    d = GetDomains("127.0.0.1", 6)
     d.start()
+    d.complete()    
     #d.request_page("http://127.0.0.1")
 
 
