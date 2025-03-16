@@ -15,6 +15,7 @@ class GetDomains:
         self.p = proc
         self.o = []
         self.o.append("http://" + domain)
+        self.graph = nx.DiGraph()
         #for i in range(1,100):
         #  self.o.append("http://{0}/sku/{1}.html".format(domain,i))
         self.c = []
@@ -147,8 +148,8 @@ class GetDomains:
 
 if __name__ == "__main__":
     d = GetDomains("127.0.0.1", 6)
-    #d.start()
-    #d.complete()    
-    d.graph()
+    d.start()
+    d.complete()    
+    #d.graph()
 
 
