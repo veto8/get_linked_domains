@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.chrome.service import Service
 import validators
 import multiprocessing as mp
 import networkx as nx
@@ -60,13 +61,14 @@ class GetDomains:
                     jobs.append(p)
                     p.start()
                 # print("...tread.................")
-                msg = """ proc: {0} \t open:{1} \t closed:{2} \t ext:{3} \t broken: {4} \t time: {5}""".format(
+                msg = """ proc: {0} \t open:{1} \t closed:{2} \t ext:{3} \t broken: {4} \t time: {5} \t {6}  """.format(
                     self.p,
                     len(self.o),
                     len(self.c),
                     len(self.e),
                     len(self.b),
                     datetime.timedelta(seconds=round(time.time()) - self.init_time),
+                    self.browser,
                 )
 
                 print(msg)
@@ -113,7 +115,98 @@ class GetDomains:
         if self.browser == "chrome":
             chrome_options = Options()
             chrome_options.add_argument("--headless=new")
-            browser = webdriver.Chrome(options=chrome_options)
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--start-maximized")
+            chrome_options.add_argument("--disable-infobars")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--disable-notifications")
+            chrome_options.add_argument("--disable-popup-blocking")
+            chrome_options.add_argument("--disable-default-apps")
+            chrome_options.add_argument("--disable-translate")
+            chrome_options.add_argument("--disable-web-security")
+            chrome_options.add_argument("--disable-logging")
+            chrome_options.add_argument("--disable-impl-side-painting")
+            chrome_options.add_argument("--disable-gpu-sandbox")
+            chrome_options.add_argument("--disable-software-rasterizer")
+            chrome_options.add_argument("--disable-accelerated-2d-canvas")
+            chrome_options.add_argument("--disable-accelerated-jpeg-decoding")
+            chrome_options.add_argument("--disable-accelerated-mjpeg-decode")
+            chrome_options.add_argument("--disable-accelerated-video-decode")
+            chrome_options.add_argument("--disable-accelerated-video-encode")
+            chrome_options.add_argument("--disable-accelerated-video-encode-vp9")
+            chrome_options.add_argument("--disable-accelerated-video-encode-h264")
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-baseline"
+            )
+            chrome_options.add_argument("--disable-accelerated-video-encode-h264-main")
+            chrome_options.add_argument("--disable-accelerated-video-encode-h264-high")
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-extended"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-baseline-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-main-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-high-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-extended-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-baseline-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-main-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-high-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-h264-extended-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-baseline"
+            )
+            chrome_options.add_argument("--disable-accelerated-video-encode-vp9-main")
+            chrome_options.add_argument("--disable-accelerated-video-encode-vp9-high")
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-extended"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-baseline-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-main-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-high-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-extended-constrained"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-baseline-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-main-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-high-unrestricted"
+            )
+            chrome_options.add_argument(
+                "--disable-accelerated-video-encode-vp9-extended-unrestricted"
+            )
+            chrome_options.add_argument("--disable-accelerated-video-encode-h265")
+            chrome_options.add_argument("--disable-accelerated-video-encode-h265-main")
+            service = Service(executable_path="/usr/bin/chromedriver")
+
+            browser = webdriver.Chrome(options=chrome_options, service=service)
             browser.get(req_url)
             content = browser.page_source
             browser.quit()
@@ -194,7 +287,7 @@ class GetDomains:
 
 
 if __name__ == "__main__":
-    d = GetDomains("127.0.0.1", "http", 5, 0.2, "request")
+    d = GetDomains("127.0.0.1", "http", 5, 0.2, "chrome")
     # d = GetDomains("myridia.com", "https", 5)
     d.start()
     d.complete()
