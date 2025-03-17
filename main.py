@@ -204,7 +204,7 @@ class GetDomains:
             )
             chrome_options.add_argument("--disable-accelerated-video-encode-h265")
             chrome_options.add_argument("--disable-accelerated-video-encode-h265-main")
-            service = Service(executable_path="/usr/bin/chromedriver")
+            service = Service(executable_path="drivers/chromedriver")
 
             browser = webdriver.Chrome(options=chrome_options, service=service)
             browser.get(req_url)
