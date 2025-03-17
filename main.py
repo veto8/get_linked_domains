@@ -4,6 +4,8 @@ import platform, time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
 import validators
 import multiprocessing as mp
 import networkx as nx
@@ -16,7 +18,9 @@ from pathlib import Path
 
 
 class GetDomains:
-    def __init__(self, domain="127.0.0.1", protocol="https", proc=3, delay=0.1):
+    def __init__(
+        self, domain="127.0.0.1", protocol="https", proc=3, delay=0.1, browser="chrome"
+    ):
         self.init_time = round(time.time())
         self.domain = domain
         self.protocol = "{0}://".format(protocol)
@@ -28,6 +32,10 @@ class GetDomains:
         self.e = []
         self.b = []
         self.delay = delay
+        self.browser = browser
+        # chrome_options = Options()
+        # chrome_options.add_argument("--headless=new")  # for Chrome >= 109
+        # self.browser = webdriver.Chrome(options=chrome_options)
 
     def start(self):
         print("...start")
@@ -102,15 +110,40 @@ class GetDomains:
 
     def request_page(self, req_url):
         items = []
-        # print(req_url)
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")  # for Chrome >= 109
-        browser = webdriver.Chrome(options=chrome_options)
-        browser.get(req_url)
-        soup = BeautifulSoup(browser.page_source, "html.parser")
+        if self.browser == "chrome":
+            chrome_options = Options()
+            chrome_options.add_argument("--headless=new")
+            browser = webdriver.Chrome(options=chrome_options)
+            browser.get(req_url)
+            content = browser.page_source
+            browser.quit()
+
+        elif self.browser == "firefox":
+            firefox_options = webdriver.FirefoxOptions()
+            firefox_options.add_argument("--headless")
+            firefox_options.add_argument("--disable-gpu")
+            browser = webdriver.Firefox(options=firefox_options)
+            browser.get(req_url)
+            content = browser.page_source
+            browser.quit()
+
+        elif self.browser == "edge":
+            edge_options = EdgeOptions()
+            edge_options.use_chromium = True
+            edge_options.add_argument("headless")
+            browser = webdriver.Edge(options=edge_options)
+            browser.get(req_url)
+            content = browser.page_source
+            browser.quit()
+        else:
+            r = requests.get(req_url)
+            content = r.content
+
+        soup = BeautifulSoup(content, "html.parser")
         _items = soup.find_all("a")
         for i in _items:
             items.append(i.get("href"))
+
         return items
 
     def process_items(self, items):
@@ -161,7 +194,7 @@ class GetDomains:
 
 
 if __name__ == "__main__":
-    # d = GetDomains("127.0.0.1", "http", 5)
-    d = GetDomains("myridia.com", "https", 5)
+    d = GetDomains("127.0.0.1", "http", 5, 0.2, "request")
+    # d = GetDomains("myridia.com", "https", 5)
     d.start()
     d.complete()
