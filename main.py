@@ -12,6 +12,7 @@ import time, datetime
 import json
 import requests
 import csv
+from pathlib import Path
 
 
 class GetDomains:
@@ -140,23 +141,27 @@ class GetDomains:
         # net.from_nx(self.graph)
         # net.show("graph.html", notebook=False)
         # print(self.c);
-        with open("links.csv", "w", newline="") as f:
+
+        Path("results/{}".format(self.domain)).mkdir(parents=True, exist_ok=True)
+
+        with open("results/{0}/links.csv".format(self.domain), "w", newline="") as f:
             writer = csv.writer(f)
             for i in self.c:
                 writer.writerow([i])
 
-        with open("broken.csv", "w", newline="") as f:
+        with open("results/{0}/broken.csv".format(self.domain), "w", newline="") as f:
             writer = csv.writer(f)
             for i in self.b:
                 writer.writerow([i])
 
-        with open("external.csv", "w", newline="") as f:
+        with open("results/{0}/external.csv".format(self.domain), "w", newline="") as f:
             writer = csv.writer(f)
             for i in self.e:
                 writer.writerow([i])
 
 
 if __name__ == "__main__":
-    d = GetDomains("127.0.0.1", "http", 5)
+    # d = GetDomains("127.0.0.1", "http", 5)
+    d = GetDomains("myridia.com", "https", 5)
     d.start()
     d.complete()
