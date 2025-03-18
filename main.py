@@ -61,13 +61,13 @@ class GetDomains:
                     jobs.append(p)
                     p.start()
                 # print("...tread.................")
-                msg = """ proc: {0} \t open:{1} \t closed:{2} \t ext:{3} \t broken: {4} \t time: {5} \t {6}  """.format(
+                msg = """{0} proc: {1} \t open:{2} \t closed:{3} \t ext:{4} \t broken: {5} \t {6}  """.format(
+                    datetime.timedelta(seconds=round(time.time()) - self.init_time),
                     self.p,
                     len(self.o),
                     len(self.c),
                     len(self.e),
                     len(self.b),
-                    datetime.timedelta(seconds=round(time.time()) - self.init_time),
                     self.browser,
                 )
 
@@ -118,9 +118,7 @@ class GetDomains:
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--disable-gpu")
-            service = Service(executable_path="drivers/chromedriver")
-            browser = webdriver.Chrome(options=chrome_options, service=service)
-            #browser = webdriver.Chrome(options=chrome_options)            
+            browser = webdriver.Chrome(options=chrome_options)
             browser.get(req_url)
             content = browser.page_source
             browser.quit()
@@ -201,7 +199,7 @@ class GetDomains:
 
 
 if __name__ == "__main__":
-    #d = GetDomains("127.0.0.1", "http", 5, 0.2, "chrome")
-    d = GetDomains("myridia.com", "https", 5)
+    # d = GetDomains("127.0.0.1", "http", 5, 0.2, "chrome")
+    d = GetDomains("myridia.com", "https", 5, 0.2, "chrome")
     d.start()
     d.complete()
