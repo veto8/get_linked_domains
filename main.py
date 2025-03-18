@@ -198,8 +198,23 @@ class GetDomains:
                 writer.writerow([i])
 
 
+def test(browser="chrome"):
+    if browser == "chrome":
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        browser = webdriver.Chrome(options=chrome_options)
+        browser.get("https://myridia.com")
+        content = browser.page_source
+        browser.quit()
+        print(content)
+
+
 if __name__ == "__main__":
     # d = GetDomains("127.0.0.1", "http", 5, 0.2, "chrome")
-    d = GetDomains("myridia.com", "https", 5, 0.2, "chrome")
-    d.start()
-    d.complete()
+    # d = GetDomains("myridia.com", "https", 5, 0.2, "chrome")
+    # d.start()
+    # d.complete()
+    test("chrome")
