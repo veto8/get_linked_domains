@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
   libc6-dev  \
   libbz2-dev  \
   libffi-dev \
-  libpython3-all-dev
+  libpython3-all-dev git libglib2.0-0 libnss3 libatk1.0 libatk-bridge2.0-0 libcups2 libxcomposite1  
   
 WORKDIR /opt
 
@@ -30,8 +30,7 @@ RUN ldconfig /usr/local/lib
 
 WORKDIR /opt/
 
-RUN apt-get update && apt-get install -y git libglib2.0-0 libnss3 libatk1.0 libatk-bridge2.0-0 libcups2
-libxcomposite1 
+
 
 RUN git clone https://github.com/myridia/get_linked_domains.git
 WORKDIR /opt/get_linked_domains
@@ -40,8 +39,6 @@ RUN /usr/local/bin/python3.13 -m venv env
 ENV PATH="env/bin:$PATH"
 RUN pip install pip --upgrade
 RUN pip install -r requirements.txt
-
-
 
 
 #VOLUME /root/src
