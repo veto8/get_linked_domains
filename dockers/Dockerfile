@@ -16,7 +16,25 @@ RUN apt-get update && apt-get install -y \
   libc6-dev  \
   libbz2-dev  \
   libffi-dev \
-  libpython3-all-dev git libglib2.0-0 libnss3 libatk1.0 libatk-bridge2.0-0 libcups2 libxcomposite1  
+  libpython3-all-dev \
+  git \
+  libglib2.0-0 \
+  libnss3 \
+  libatk1.0 \
+  libatk-bridge2.0-0 \
+  libcups2 \
+  libxcomposite1  
+  libxdamage1 \
+  libxfixes3 \
+  libxrandr2 \
+  libgbm1 \
+  libxkbcommon0 \
+  libpango  \
+  libpango-1.0-0 \
+  libcairo2 \
+  libasound2 
+
+#./chrome --headless--disable-gpu --no-sandbox https://myridia.com
   
 WORKDIR /opt
 
