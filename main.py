@@ -16,6 +16,7 @@ import json
 import requests
 import csv
 from pathlib import Path
+import argparse
 
 
 class GetDomains:
@@ -209,12 +210,44 @@ def test(browser="chrome"):
         browser.get("https://myridia.com")
         content = browser.page_source
         browser.quit()
-        print(content)
+        print("..test ok: count characters: {}".format(len(content)))
+    elif browser == "firefox":
+        firefox_options = webdriver.FirefoxOptions()
+        firefox_options.add_argument("--headless")
+        firefox_options.add_argument("--disable-gpu")
+        browser = webdriver.Firefox(options=firefox_options)
+        browser.get("https://myridia.com")
+        content = browser.page_source
+        browser.quit()
+        print("..test ok: count characters: {}".format(len(content)))
+    elif browser == "edge":
+        edge_options = EdgeOptions()
+        edge_options.use_chromium = True
+        edge_options.add_argument("headless")
+        browser = webdriver.Edge(options=edge_options)
+        browser.get("https://myridia.com")
+        content = browser.page_source
+        browser.quit()
+        print("..test ok: count characters: {}".format(len(content)))
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="ProgramName",
+        description="What the program does",
+        epilog="Text at the bottom of help",
+    )
+    parser.add_argument("-t", "--test")
+    # parser.add_argument("-b", "--browser")
+
+    args = parser.parse_args()
+    # print(args.test, args.browser)
+
     # d = GetDomains("127.0.0.1", "http", 5, 0.2, "chrome")
     # d = GetDomains("myridia.com", "https", 5, 0.2, "chrome")
     # d.start()
     # d.complete()
-    test("chrome")
+
+    if args.test:
+        # print(args.test)
+        test(args.test)
