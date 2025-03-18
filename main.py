@@ -201,30 +201,32 @@ class GetDomains:
 
 def test(browser="chrome"):
     if browser == "chrome":
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        browser = webdriver.Chrome(options=chrome_options)
+        options = Options()
+        options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-extensions")
+        options.add_argument("window-size=1920,1080")
+        browser = webdriver.Chrome(options=options)
         browser.get("https://myridia.com")
         content = browser.page_source
         browser.quit()
         print("..test ok: count characters: {}".format(len(content)))
     elif browser == "firefox":
-        firefox_options = webdriver.FirefoxOptions()
-        firefox_options.add_argument("--headless")
-        firefox_options.add_argument("--disable-gpu")
-        browser = webdriver.Firefox(options=firefox_options)
+        options = webdriver.FirefoxOptions()
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+        browser = webdriver.Firefox(options=options)
         browser.get("https://myridia.com")
         content = browser.page_source
         browser.quit()
         print("..test ok: count characters: {}".format(len(content)))
     elif browser == "edge":
-        edge_options = EdgeOptions()
-        edge_options.use_chromium = True
-        edge_options.add_argument("headless")
-        browser = webdriver.Edge(options=edge_options)
+        options = EdgeOptions()
+        options.use_chromium = True
+        options.add_argument("headless")
+        browser = webdriver.Edge(options=options)
         browser.get("https://myridia.com")
         content = browser.page_source
         browser.quit()
