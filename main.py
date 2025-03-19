@@ -1,22 +1,15 @@
 #!/usr/bin/env python
-
-import platform, time
+import platform, time, json, csv, datetime, validators, requests, argparse, pickle
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.chrome.service import Service
-import validators
 import multiprocessing as mp
 import networkx as nx
 from pyvis.network import Network
-import time, datetime
-import json
-import requests
-import csv
 from pathlib import Path
-import argparse
 
 
 class GetDomains:
@@ -95,18 +88,20 @@ class GetDomains:
         items = []
         if validators.url(req_url):
             check = requests.head(req_url)
-            if check.status_code == 200:
+            # print(req_url,check.status_code)
+            if check.status_code in [200, 301]:
                 _items = self.request_page(req_url)
                 if len(_items):
                     for i in _items:
-                        if (
-                            i.startswith("https://") == False
-                            and i.startswith("http://") == False
-                        ):
-                            i = "{0}{1}{2}".format(self.protocol, self.domain, i)
-                        if i[-1] == "/":
-                            i = i[:-1]
-                        items.append(i)
+                        if i is not None:
+                            if (
+                                i.startswith("https://") == False
+                                and i.startswith("http://") == False
+                            ):
+                                i = "{0}{1}{2}".format(self.protocol, self.domain, i)
+                            if i[-1] == "/":
+                                i = i[:-1]
+                            items.append(i)
             else:
                 items = False
         return_dict[req_url] = items
@@ -199,7 +194,7 @@ class GetDomains:
                 writer.writerow([i])
 
 
-def test(browser="chrome"):
+def test(browser, domain, protocol):
     if browser == "chrome":
         options = Options()
         options.add_argument("--headless=new")
@@ -209,10 +204,13 @@ def test(browser="chrome"):
         options.add_argument("--disable-extensions")
         options.add_argument("window-size=1920,1080")
         browser = webdriver.Chrome(options=options)
-        browser.get("https://myridia.com")
+
+        browser.get("{}://{}".format(protocol, domain))
         content = browser.page_source
         browser.quit()
+        print(content)
         print("..test ok: count characters: {}".format(len(content)))
+
     elif browser == "firefox":
         options = webdriver.FirefoxOptions()
         options.add_argument("--headless")
@@ -243,7 +241,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--domain", required=True, default="127.0.0.1")
     parser.add_argument("-p", "--protocol", default="https")
     parser.add_argument("-w", "--worker", default=5)
-    parser.add_argument("-r", "--throttle", default=0.2)
+    parser.add_argument("-s", "--slowdown", default=0.2)
     parser.add_argument("-b", "--browser", default="chrome")
     #  self, domain="127.0.0.1", protocol="https", proc=3, delay=0.1, browser="chrome"
 
@@ -260,11 +258,11 @@ if __name__ == "__main__":
     print(args.worker)
     print(args.browser)
     if args.test:
-        test(args.test)
+        test(args.test, args.domain, args.protocol)
 
     elif args.domain:
         d = GetDomains(
-            args.domain, args.protocol, args.worker, args.throttle, args.browser
+            args.domain, args.protocol, args.worker, args.slowdown, args.browser
         )
         d.start()
         d.complete()
