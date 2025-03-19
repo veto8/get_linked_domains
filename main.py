@@ -240,6 +240,13 @@ if __name__ == "__main__":
         epilog="Text at the bottom of help",
     )
     parser.add_argument("-t", "--test")
+    parser.add_argument("-d", "--domain", required=True, default="127.0.0.1")
+    parser.add_argument("-p", "--protocol", default="http")
+    parser.add_argument("-w", "--worker", default=5)
+    parser.add_argument("-r", "--throttle", default=0.2)
+    parser.add_argument("-b", "--browser", default="chrome")
+    #  self, domain="127.0.0.1", protocol="https", proc=3, delay=0.1, browser="chrome"
+
     # parser.add_argument("-b", "--browser")
 
     args = parser.parse_args()
@@ -247,9 +254,19 @@ if __name__ == "__main__":
 
     # d = GetDomains("127.0.0.1", "http", 5, 0.2, "chrome")
     # d = GetDomains("myridia.com", "https", 5, 0.2, "chrome")
-    # d.start()
-    # d.complete()
 
+    print(args.domain)
+    print(args.protocol)
+    print(args.worker)
+    print(args.browser)
     if args.test:
-        # print(args.test)
         test(args.test)
+
+    elif args.domain:
+        d = GetDomains(
+            args.domain, args.protocol, args.worker, args.throttle, args.browser
+        )
+        d.start()
+        d.complete()
+    else:
+        print("...missing parameters")
