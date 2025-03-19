@@ -49,7 +49,7 @@ WORKDIR /opt/
 
 
 
-RUN git clone https://github.com/myridia/get_linked_domains.git
+RUN git clone https://github.com/myridia/webspider.git
 WORKDIR /opt/get_linked_domains
 RUN /usr/local/bin/python3.13 -m venv env
 #RUN . env/bin/activate
