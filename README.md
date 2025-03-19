@@ -1,9 +1,9 @@
-# get_linked_domains
-Python App to extract all linked Domain Names from a specific Website
+# Webspider
+App to query a Websitdomain and extract all linked urls and domains 
 
 ## Install
 ```
-git clone https://github.com/myridia/get_linked_domains.git
+git clone https://github.com/myridia/webspider.git
 cd get_linked_domains
 python3 -m venv env
 . env/bin/activate
