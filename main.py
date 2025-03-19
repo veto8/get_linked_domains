@@ -241,7 +241,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("-t", "--test")
     parser.add_argument("-d", "--domain", required=True, default="127.0.0.1")
-    parser.add_argument("-p", "--protocol", default="http")
+    parser.add_argument("-p", "--protocol", default="https")
     parser.add_argument("-w", "--worker", default=5)
     parser.add_argument("-r", "--throttle", default=0.2)
     parser.add_argument("-b", "--browser", default="chrome")
